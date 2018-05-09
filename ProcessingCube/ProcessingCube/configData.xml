@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<root>
+  <db name='OLAP_BM'>
+    <dim>DIM 册本,DIM 人员,DIM 用水性质,DIM 换表故障原因</dim>
+    <cubes>
+      <cube partition='1'>
+        <name>抄表情况</name>
+        <rangeSql><![CDATA[select * from [dbo].[FACT_抄表情况] where 账务年月 between @a and @b]]></rangeSql>
+        <range>5</range>
+        <measureName>FACT 抄表情况</measureName>
+        <format>yyyyMM</format>
+      </cube>
+      <cube partition='1'>
+        <name>表卡信息</name>
+        <rangeSql><![CDATA[select * from [dbo].[FACT_表卡信息] where 历史年月 between @a and @b]]></rangeSql>
+        <range>3</range>
+        <measureName>FACT 表卡信息</measureName>
+        <format>yyyyMM</format>
+      </cube>
+      <cube partition='1'>
+        <name>开账记录</name>
+        <rangeSql><![CDATA[select * from [dbo].[FACT_开账记录] where 历史年月 between @a and @b]]></rangeSql>
+        <range>3</range>
+        <measureName>FACT 开账记录</measureName>
+        <format>yyyyMM</format>
+      </cube>
+      <cube partition='0'>
+        <name>账务处理</name>
+      </cube>
+      <cube partition='0'>
+        <name>换表工单</name>
+      </cube>
+      <cube partition='0'>
+        <name>故障换表</name>
+      </cube>
+      <cube partition='0'>
+        <name>计划换表</name>
+      </cube>
+      <cube partition='0'>
+        <name>催缴记录</name>
+      </cube>
+      <cube partition='0'>
+        <name>业务工单</name>
+      </cube>
+      <cube partition='0'>
+        <name>拆表工单</name>
+      </cube>
+      <cube partition='0'>
+        <name>维修工单</name>
+      </cube>
+      <cube partition='0'>
+        <name>校表工单</name>
+      </cube>
+      <cube partition='0'>
+        <name>复装工单</name>
+      </cube>
+    </cubes>
+  </db>
+  <db name='OLAP_MW'>
+    <dim></dim>
+    <cubes>
+      <cube partition='1'>
+        <name>水表统计</name>
+        <rangeSql><![CDATA[select * from [dbo].[FACT_水表资料] where 历史年月 between @a and @b]]></rangeSql>
+        <range>3</range>
+        <measureName>FACT 水表资料</measureName>
+        <format>yyyyMM</format>
+      </cube>
+      <cube partition='0'>
+        <name>出库情况</name>
+      </cube>
+      <cube partition='0'>
+        <name>业务情况</name>
+      </cube>
+    </cubes>
+  </db>
+</root>
+
+<!--实例
+<db name=''>
+  <dim>*</dim>
+  <cubes>
+    <cube partition='1'>
+      <name>aabb</name>
+      <rangeSql><![CDATA[select * from 表名 where 时间字段  between @a and @b]]></rangeSql>
+      <range>5</range>
+      <measureName>FACT 抄表情况</measureName>
+      <format>yyyyMM</format>
+    </cube>
+    <cube partition='0'>
+      <name>aabb</name>
+    </cube>
+  </cubes>
+</db>
+-->
+
+<!--dim节点为空代表不处理,*代表处理所有维度,若有维度名称逗号分割-->
+<!--cubes节点为空代表不处理任何cube,*代表处理所有cube（不进行分区）-->
+<!--partition属性:0 为不分区,1 为开启按照时间分区(只在已有分区的前提下继续分,所以必修已经存在至少一个分区,同时最后一个分区满足命名格式)
+按照时间分区必须节点：name，rangeSql，range,format，
+不分区必须节点：name-->
+<!--
+format 有如下格式
+yyyyMM:201801
+yyyyMMdd:20180113
+yyyyMMddHH：2018011303
+-->
+<!--measureName为度量值名称  -->
+<!--range节点为时间分区区间, 最小单位1年 分区语句中变量必须为@a,@b-->
+<!--无论日期格式，其分区命名格式都为: cube度量值名称_201501-201712, 此区间的范围为20150101-20171231  -->
